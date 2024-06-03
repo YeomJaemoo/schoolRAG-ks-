@@ -1,15 +1,15 @@
 import streamlit as st
 from pathlib import Path
-from langchain.document_loaders import PyPDFLoader, Docx2txtLoader, UnstructuredPowerPointLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.memory import ConversationBufferMemory
-from langchain.vectorstores import FAISS
-from langchain.callbacks import get_openai_callback
-from langchain.memory import StreamlitChatMessageHistory
-from langchain.chains import ConversationalRetrievalChain
-from langchain.chat_models import ChatOpenAI
-from langchain.schema import Document
+from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, UnstructuredPowerPointLoader
+from langchain_community.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.memory import ConversationBufferMemory
+from langchain_community.vectorstores import FAISS
+from langchain_community.callbacks import get_openai_callback
+from langchain_community.memory import StreamlitChatMessageHistory
+from langchain_community.chains import ConversationalRetrievalChain
+from langchain_community.chat_models import ChatOpenAI
+from langchain_community.schema import Document
 import tiktoken
 
 def main():
@@ -28,7 +28,7 @@ def main():
         st.session_state.processComplete = None
 
     with st.sidebar:
-        folder_path = Path()
+        folder_path = st.text_input('폴더 경로 입력', '')
         openai_api_key = st.secrets["OPENAI_API_KEY"]
         model_name = 'gpt-3.5-turbo'
     
