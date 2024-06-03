@@ -28,7 +28,7 @@ def main():
         st.session_state.processComplete = None
 
     with st.sidebar:
-        folder_path = path()
+        folder_path = Path()
         openai_api_key = st.secrets["OPENAI_API_KEY"]
         model_name = 'gpt-3.5-turbo'
     
