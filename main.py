@@ -11,7 +11,6 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import Document
 import tiktoken
-import pandas as pd
 
 def main():
     st.set_page_config(page_title="kangsinchat", page_icon="🏫")
@@ -97,19 +96,9 @@ def get_text_from_folder(folder_path):
             elif file_path.suffix == '.pptx':
                 loader = UnstructuredPowerPointLoader(str(file_path))
                 documents = loader.load_and_split()
-            elif file_path.suffix == '.xlsx':
-                documents = get_text_from_excel(file_path)
             else:
                 documents = []
             doc_list.extend(documents)
-    return doc_list
-
-def get_text_from_excel(file_path):
-    doc_list = []
-    df = pd.read_excel(file_path)
-    for _, row in df.iterrows():
-        doc = Document(page_content=row.to_string())
-        doc_list.append(doc)
     return doc_list
 
 def get_text_chunks(text):
