@@ -11,6 +11,7 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import Document
 import tiktoken
+import pandas as pd
 
 def main():
     st.set_page_config(page_title="kangsinchat", page_icon="🏫")
@@ -28,7 +29,8 @@ def main():
         st.session_state.processComplete = None
 
     with st.sidebar:
-        folder_path = Path()
+        folder_path = st.text_input('폴더 경로 입력', '')
+        uploaded_file = st.file_uploader("파일 업로드", type=["pdf", "docx", "pptx", "xlsx"])
         openai_api_key = st.secrets["OPENAI_API_KEY"]
         model_name = 'gpt-3.5-turbo'
     
@@ -36,7 +38,11 @@ def main():
     process = st.button("Process")
 
     if process:
-        files_text = get_text_from_folder(folder_path)
+        if uploaded_file:
+            files_text = get_text_from_file(uploaded_file)
+        else:
+            files_text = get_text_from_folder(folder_path)
+        
         text_chunks = get_text_chunks(files_text)
         vectorstore = get_vectorstore(text_chunks)
         st.session_state.conversation = get_conversation_chain(vectorstore, openai_api_key, model_name)
@@ -99,6 +105,32 @@ def get_text_from_folder(folder_path):
             else:
                 documents = []
             doc_list.extend(documents)
+    return doc_list
+
+def get_text_from_file(file):
+    doc_list = []
+    if file.name.endswith('.pdf'):
+        loader = PyPDFLoader(file)
+        documents = loader.load_and_split()
+    elif file.name.endswith('.docx'):
+        loader = Docx2txtLoader(file)
+        documents = loader.load_and_split()
+    elif file.name.endswith('.pptx'):
+        loader = UnstructuredPowerPointLoader(file)
+        documents = loader.load_and_split()
+    elif file.name.endswith('.xlsx'):
+        documents = get_text_from_excel(file)
+    else:
+        documents = []
+    doc_list.extend(documents)
+    return doc_list
+
+def get_text_from_excel(file):
+    doc_list = []
+    df = pd.read_excel(file)
+    for _, row in df.iterrows():
+        doc = Document(page_content=row.to_string())
+        doc_list.append(doc)
     return doc_list
 
 def get_text_chunks(text):
