@@ -37,11 +37,7 @@ def main():
     process = st.button("Process")
 
     if process:
-        if uploaded_file:
-            files_text = get_text_from_file(uploaded_file)
-        else:
-            files_text = get_text_from_folder(folder_path)
-        
+        files_text = get_text_from_folder(folder_path)
         text_chunks = get_text_chunks(files_text)
         vectorstore = get_vectorstore(text_chunks)
         st.session_state.conversation = get_conversation_chain(vectorstore, openai_api_key, model_name)
@@ -101,32 +97,16 @@ def get_text_from_folder(folder_path):
             elif file_path.suffix == '.pptx':
                 loader = UnstructuredPowerPointLoader(str(file_path))
                 documents = loader.load_and_split()
+            elif file_path.suffix == '.xlsx':
+                documents = get_text_from_excel(file_path)
             else:
                 documents = []
             doc_list.extend(documents)
     return doc_list
 
-def get_text_from_file(file):
+def get_text_from_excel(file_path):
     doc_list = []
-    if file.name.endswith('.pdf'):
-        loader = PyPDFLoader(file)
-        documents = loader.load_and_split()
-    elif file.name.endswith('.docx'):
-        loader = Docx2txtLoader(file)
-        documents = loader.load_and_split()
-    elif file.name.endswith('.pptx'):
-        loader = UnstructuredPowerPointLoader(file)
-        documents = loader.load_and_split()
-    elif file.name.endswith('.xlsx'):
-        documents = get_text_from_excel(file)
-    else:
-        documents = []
-    doc_list.extend(documents)
-    return doc_list
-
-def get_text_from_excel(file):
-    doc_list = []
-    df = pd.read_excel(file)
+    df = pd.read_excel(file_path)
     for _, row in df.iterrows():
         doc = Document(page_content=row.to_string())
         doc_list.append(doc)
