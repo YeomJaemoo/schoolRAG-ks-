@@ -30,7 +30,6 @@ def main():
 
     with st.sidebar:
         folder_path = Path()
-        uploaded_file = st.file_uploader("파일 업로드", type=["pdf", "docx", "pptx", "xlsx"])
         openai_api_key = st.secrets["OPENAI_API_KEY"]
         model_name = 'gpt-3.5-turbo'
     
