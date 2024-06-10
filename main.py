@@ -29,7 +29,7 @@ def main():
         st.session_state.processComplete = None
 
     with st.sidebar:
-        folder_path = st.text_input('폴더 경로 입력', '')
+        folder_path = Path()
         uploaded_file = st.file_uploader("파일 업로드", type=["pdf", "docx", "pptx", "xlsx"])
         openai_api_key = st.secrets["OPENAI_API_KEY"]
         model_name = 'gpt-3.5-turbo'
