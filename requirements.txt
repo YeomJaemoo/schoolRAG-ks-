@@ -10,3 +10,4 @@ pypdf
 loguru
 docx2txt
 langchain-community
+openpyxl
